@@ -2,7 +2,11 @@ class MissionsController < ApplicationController
 
     def create 
         mission = Mission.create!(mission_params)
-        render json: mission.planet, status: :created
+        if mission
+            render json: mission.planet, serializer: PlanetSerializer, status: :created
+        else
+            render json: { errors: "validation errors"}, status: :not_found
+        end
     end
 
     

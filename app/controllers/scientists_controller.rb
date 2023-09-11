@@ -13,23 +13,39 @@ class ScientistsController < ApplicationController
 
     def create
         scientist = Scientist.create!(scientist_params)
-        render json: scientist, status: :created
+        if scientist
+            render json: scientist, status: :created
+        else
+            render json: { errors: ["valididation erros"]}, status: :unprocessable_entity
+        end
+        
     end
 
     def update
-        @scientist.update!(scientist_params_update)
-        render json: @scientist, status: :accepted
+        if @scientist
+            if @scientist.update!(scientist_params_update)
+                render json: @scientist, status: :accepted
+            else
+                render json: { errors: ["validation errors"]}, status: :unprocessable_entity
+            end
+        else
+            render json: { errors: ["Scientitst not found"]}, stauts: :not_found
+        end
     end
 
     def destroy
-        @scientist.destroy
-        head :no_content
+        if @scientist
+            @scientist.destroy
+            head :no_content, status: :deleted
+        else
+            render json: {error: "Scientist not found"}, status: :not_found
+        end
     end
 
     private
 
     def one_scientist
-        @scientist = Scientists.find(params[:id])
+        @scientist = Scientist.find(params[:id])
     end
 
     def scientist_params
